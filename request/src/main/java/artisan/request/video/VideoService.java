@@ -16,25 +16,17 @@ import org.springframework.web.client.RestClient;
 public class VideoService {
 
     private final VideoRepository videoRepository;
-    private final RestClient restClient;
+    private final AsyncVideoService asyncVideoService;
 
     public String create(VideoCreateRequest request) {
 
         var command = new VideoCreateCommand(request.userId());
         videoRepository.save(command);
-
-        log.info("start to make video user:{}", request.userId());
-        restClient.post()
-                .contentType(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .body(Void.class);
-
-        log.info("create video user:{}", request.userId());
+        asyncVideoService.create(request);
         command.complete();
         videoRepository.save(command);
 
         return "OK";
     }
-
 
 }
