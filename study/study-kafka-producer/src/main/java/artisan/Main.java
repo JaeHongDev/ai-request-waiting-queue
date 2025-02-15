@@ -7,7 +7,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         var props = new Properties();
 
@@ -18,14 +18,29 @@ public class Main {
 
         // 동기식 호출
         synchronousCall(props);
+        asyncCall(props);
+
 
     }
 
     private static void synchronousCall(Properties props){
         try(Producer<String, String> producer = new KafkaProducer<>(props)){
-            RecordMetadata metadata = producer.send(new ProducerRecord<>("peter-topic", "Apache kafka is a distributed streaming platform")).get();
+            RecordMetadata metadata = producer.send(
+                    new ProducerRecord<>("peter-topic", "syncMessage: Apache kafka is a distributed streaming platform")
+            ).get();
 
             System.out.printf("partition: %d, offser: %d \n", metadata.partition(), metadata.offset());
+        }catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private static void asyncCall(Properties props){
+        try(Producer<String, String> producer = new KafkaProducer<>(props)){
+            producer.send(
+                    new ProducerRecord<>("peter-topic", "asyncMessage:Apache kafka is a distributed streaming platform"),
+                    new PeterCallback()
+            );
         }catch (Exception exception) {
             exception.printStackTrace();
         }
