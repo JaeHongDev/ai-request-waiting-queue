@@ -7,7 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+
+@Getter
 @Entity
 @Table(name = "generation_videos")
 public class GenerationVideo {
@@ -19,4 +22,7 @@ public class GenerationVideo {
     @Enumerated(EnumType.STRING)
     private GenerationStatus generationStatus;
 
+    public GenerationVideo() {
+        this.generationStatus = GenerationStatus.INIT;
+    }
 }
